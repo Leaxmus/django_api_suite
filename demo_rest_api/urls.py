@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import DemoRestApi
 
 urlpatterns = [
-   path("", views.DemoRestApi.as_view(), name="demo_rest_api_resources" ),
+    path("", DemoRestApi.as_view(), name="demo_rest_api_list"),  
+    path("<uuid:item_id>/", DemoRestApi.as_view(), name="demo_rest_api_detail"),
 ]
