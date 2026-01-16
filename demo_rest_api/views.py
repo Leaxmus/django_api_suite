@@ -106,8 +106,3 @@ class DemoRestApi(APIView):
             {'message': 'Registro no encontrado.'},
             status=status.HTTP_404_NOT_FOUND
         )
-
-
-def demo_api_interface(request):
-    """Vista para la interfaz HTML de Demo REST API"""
-    return render(request, 'demo_rest_api/interface.html')
