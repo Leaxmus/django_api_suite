@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Demo REST API - Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-gray-50">
+    <div class="min-h-screen" style='font-family: Inter, "Noto Sans", sans-serif;'>
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-10 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-lg font-bold">Demo REST API</h2>
+                </div>
+                <div class="flex gap-8">
+                    <a href="/" class="text-sm font-medium hover:text-blue-600">Home</a>
+                    <a href="/demo/" class="text-sm font-medium text-blue-600">Demo REST API</a>
+                    <a href="/landing/" class="text-sm font-medium hover:text-blue-600">Landing API</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-7xl mx-auto p-6">
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4">API Endpoints</h3>
+                <div class="space-y-2 text-sm">
+                    <p><span class="font-mono bg-gray-100 px-2 py-1 rounded">GET /demo/api/</span> - Obtener todos los
+                        registros activos</p>
+                    <p><span class="font-mono bg-gray-100 px-2 py-1 rounded">POST /demo/api/</span> - Crear nuevo
+                        registro</p>
+                    <p><span class="font-mono bg-gray-100 px-2 py-1 rounded">PUT /demo/api/{id}/</span> - Actualizar
+                        completamente</p>
+                    <p><span class="font-mono bg-gray-100 px-2 py-1 rounded">PATCH /demo/api/{id}/</span> - Actualizar
+                        parcialmente</p>
+                    <p><span class="font-mono bg-gray-100 px-2 py-1 rounded">DELETE /demo/api/{id}/</span> - Eliminación
+                        lógica</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Create Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Crear Registro (POST)</h3>
+                    <form id="createForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nombre</label>
+                            <input type="text" name="name" required
+                                class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Email</label>
+                            <input type="email" name="email" required
+                                class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                            Crear
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Update Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Actualizar Registro</h3>
+                    <form id="updateForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">ID del Registro</label>
+                            <input type="text" name="id" required
+                                class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Nombre</label>
+                            <input type="text" name="name" class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Email</label>
+                            <input type="email" name="email" class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" data-method="PUT"
+                                class="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                                PUT (Completo)
+                            </button>
+                            <button type="submit" data-method="PATCH"
+                                class="flex-1 bg-yellow-600 text-white py-2 rounded hover:bg-yellow-700">
+                                PATCH (Parcial)
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Delete Form -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">Eliminar Registro (DELETE)</h3>
+                    <form id="deleteForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">ID del Registro</label>
+                            <input type="text" name="id" required
+                                class="w-full border border-gray-300 rounded px-3 py-2">
+                        </div>
+                        <button type="submit" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+
+                <!-- List Records -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Registros Activos</h3>
+                        <button id="refreshBtn" class="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                            Refrescar
+                        </button>
+                    </div>
+                    <div id="recordsList" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Response Area -->
+            <div class="bg-white rounded-lg shadow p-6 mt-6">
+                <h3 class="text-lg font-semibold mb-4">Respuesta del Servidor</h3>
+                <pre id="response" class="bg-gray-100 p-4 rounded text-sm overflow-auto">Esperando operación...</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/demo/api';
+
+        function displayResponse(data) {
+            document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function loadRecords() {
+            try {
+                const response = await fetch(`${API_BASE}/`);
+                const data = await response.json();
+
+                const listEl = document.getElementById('recordsList');
+                if (Array.isArray(data) && data.length > 0) {
+                    listEl.innerHTML = data.map(record => `
+            <div class="border border-gray-200 rounded p-3">
+              <p class="font-mono text-xs text-gray-500">${record.id}</p>
+              <p class="font-semibold">${record.name}</p>
+              <p class="text-sm text-gray-600">${record.email}</p>
+            </div>
+          `).join('');
+                } else {
+                    listEl.innerHTML = '<p class="text-gray-500">No hay registros activos</p>';
+                }
+
+                displayResponse(data);
+            } catch (error) {
+                displayResponse({ error: error.message });
+            }
+        }
+
+        // Create Form
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch(`${API_BASE}/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                displayResponse(result);
+                e.target.reset();
+                loadRecords();
+            } catch (error) {
+                displayResponse({ error: error.message });
+            }
+        });
+
+        // Update Form
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const method = e.submitter.dataset.method;
+            const formData = new FormData(e.target);
+            const id = formData.get('id');
+            const data = {};
+
+            if (formData.get('name')) data.name = formData.get('name');
+            if (formData.get('email')) data.email = formData.get('email');
+
+            try {
+                const response = await fetch(`${API_BASE}/${id}/`, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                displayResponse(result);
+                loadRecords();
+            } catch (error) {
+                displayResponse({ error: error.message });
+            }
+        });
+
+        // Delete Form
+        document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const id = formData.get('id');
+
+            try {
+                const response = await fetch(`${API_BASE}/${id}/`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                displayResponse(result);
+                e.target.reset();
+                loadRecords();
+            } catch (error) {
+                displayResponse({ error: error.message });
+            }
+        });
+
+        // Refresh Button
+        document.getElementById('refreshBtn').addEventListener('click', loadRecords);
+
+        // Load records on page load
+        loadRecords();
+    </script>
+</body>
+
+</html>

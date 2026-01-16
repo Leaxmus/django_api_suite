@@ -1,19 +1,16 @@
 from django.shortcuts import render
 
-# Create your views here.
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 import uuid
 
-# Simulación de base de datos local en memoria
 data_list = []
 
-# Añadiendo algunos datos de ejemplo para probar el GET
 data_list.append({'id': str(uuid.uuid4()), 'name': 'User01', 'email': 'user01@example.com', 'is_active': True})
 data_list.append({'id': str(uuid.uuid4()), 'name': 'User02', 'email': 'user02@example.com', 'is_active': True})
-data_list.append({'id': str(uuid.uuid4()), 'name': 'User03', 'email': 'user03@example.com', 'is_active': False}) # Ejemplo de item inactivo
+data_list.append({'id': str(uuid.uuid4()), 'name': 'User03', 'email': 'user03@example.com', 'is_active': False})
 
 class DemoRestApi(APIView):
     name = "Demo REST API"
@@ -109,4 +106,8 @@ class DemoRestApi(APIView):
             {'message': 'Registro no encontrado.'},
             status=status.HTTP_404_NOT_FOUND
         )
-  
+
+
+def demo_api_interface(request):
+    """Vista para la interfaz HTML de Demo REST API"""
+    return render(request, 'demo_rest_api/interface.html')

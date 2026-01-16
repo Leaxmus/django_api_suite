@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import LandingAPI
+from .views import LandingAPI, landing_api_interface
 
 urlpatterns = [
-    path("", LandingAPI.as_view(), name="landing_api_list"),
-    path("<str:item_id>/", LandingAPI.as_view(), name="landing_api_detail"),
+    path("", landing_api_interface, name="landing_api_interface"),
+    path("api/", LandingAPI.as_view(), name="landing_api_list"),
+    path("api/<str:item_id>/", LandingAPI.as_view(), name="landing_api_detail"),
 ]

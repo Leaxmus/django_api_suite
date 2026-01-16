@@ -172,3 +172,8 @@ class LandingAPI(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+def landing_api_interface(request):
+    """Vista para la interfaz HTML de Landing API"""
+    return render(request, 'landing_api/interface.html')
