@@ -99,10 +99,9 @@ class DemoRestApi(APIView):
     def delete(self, request, item_id):
         for item in data_list:
             if item['id'] == str(item_id):
-
-                data_list.remove(item)
+                item['is_active'] = False
                 return Response(
-                    {'message': 'Registro eliminado correctamente.'},
+                    {'message': 'Registro desactivado correctamente.'},
                     status=status.HTTP_200_OK
                 )
 
